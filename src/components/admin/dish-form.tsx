@@ -32,8 +32,8 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [platingNotes, setPlatingNotes] = useState(dish?.plating_notes || "");
   const [prepTime, setPrepTime] = useState(dish?.prep_time_minutes || 0);
   const [isPublished, setIsPublished] = useState(dish?.is_published || false);
-  const [heroImagePath, setHeroImagePath] = useState(dish?.hero_image_path || "");
-  const [videoPath, setVideoPath] = useState("");
+  const [heroImages, setHeroImages] = useState<string[]>(dish?.hero_image_path ? [dish.hero_image_path] : []);
+  const [videos, setVideos] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,8 +75,10 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
       plating_notes: platingNotes || null,
       prep_time_minutes: prepTime || null,
       is_published: isPublished,
-      hero_image_path: heroImagePath || null,
+      hero_image_path: heroImages[0] || null,
     };
+
+    let dishId = dish?.id;
 
     if (dish) {
       const { error: dbError } = await supabase.from("dishes").update(data).eq("id", dish.id);
@@ -85,18 +87,6 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         setLoading(false);
         return;
       }
-      // Save video to dish_media if uploaded
-      if (videoPath) {
-        await supabase.from("dish_media").insert({
-          dish_id: dish.id,
-          media_type: "video",
-          storage_bucket: "dish-videos",
-          storage_path: videoPath,
-          file_name: videoPath.split("/").pop(),
-          mime_type: "video/mp4",
-          is_primary: true,
-        });
-      }
     } else {
       const { data: newDish, error: dbError } = await supabase.from("dishes").insert(data).select().single();
       if (dbError) {
@@ -104,22 +94,63 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         setLoading(false);
         return;
       }
-      // Save video to dish_media if uploaded
-      if (videoPath && newDish) {
+      dishId = newDish.id;
+    }
+
+    // Save all images to dish_media
+    if (heroImages.length > 0 && dishId) {
+      for (let i = 0; i < heroImages.length; i++) {
         await supabase.from("dish_media").insert({
-          dish_id: newDish.id,
+          dish_id: dishId,
+          media_type: "image",
+          storage_bucket: "dish-images",
+          storage_path: heroImages[i],
+          file_name: heroImages[i].split("/").pop(),
+          mime_type: "image/jpeg",
+          is_primary: i === 0,
+        });
+      }
+    }
+
+    // Save all videos to dish_media
+    if (videos.length > 0 && dishId) {
+      for (let i = 0; i < videos.length; i++) {
+        await supabase.from("dish_media").insert({
+          dish_id: dishId,
           media_type: "video",
           storage_bucket: "dish-videos",
-          storage_path: videoPath,
-          file_name: videoPath.split("/").pop(),
+          storage_path: videos[i],
+          file_name: videos[i].split("/").pop(),
           mime_type: "video/mp4",
-          is_primary: true,
+          is_primary: i === 0,
         });
       }
     }
 
     router.push("/admin/pratos");
     router.refresh();
+  };
+
+  const uploadImage = async (file: File) => {
+    const supabase = createClient();
+    const path = `dishes/${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage.from("dish-images").upload(path, file);
+    if (error) {
+      setError("Erro no upload da imagem: " + error.message);
+      return null;
+    }
+    return data.path;
+  };
+
+  const uploadVideo = async (file: File) => {
+    const supabase = createClient();
+    const path = `dishes/${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage.from("dish-videos").upload(path, file);
+    if (error) {
+      setError("Erro no upload do video: " + error.message);
+      return null;
+    }
+    return data.path;
   };
 
   return (
@@ -179,57 +210,55 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
 
       <section className="space-y-4">
         <h3 className="text-lg font-bold text-primary">Midias</h3>
+        
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-text">Foto do prato (hero image)</label>
+          <label className="block text-sm font-medium text-text">Fotos do prato</label>
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const supabase = createClient();
-              const path = `dishes/${Date.now()}_${file.name}`;
-              const { data, error } = await supabase.storage.from("dish-images").upload(path, file);
-              if (error) {
-                setError("Erro no upload da imagem: " + error.message);
-                return;
+              const files = Array.from(e.target.files || []);
+              for (const file of files) {
+                const path = await uploadImage(file);
+                if (path) setHeroImages(prev => [...prev, path]);
               }
-              setHeroImagePath(data.path);
             }}
             className="block w-full text-sm text-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
           />
-          {heroImagePath && (
-            <div className="mt-2">
-              <img src={`https://facdbydtkqabmxkdcugp.supabase.co/storage/v1/object/public/dish-images/${heroImagePath}`} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
-              <button type="button" onClick={() => setHeroImagePath("")} className="text-sm text-red-600 mt-1">Remover</button>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {heroImages.map((img, idx) => (
+              <div key={idx} className="relative">
+                <img src={`https://facdbydtkqabmxkdcugp.supabase.co/storage/v1/object/public/dish-images/${img}`} alt={`Foto ${idx + 1}`} className="w-24 h-24 object-cover rounded-lg" />
+                <button type="button" onClick={() => setHeroImages(prev => prev.filter((_, i) => i !== idx))} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">×</button>
+              </div>
+            ))}
+          </div>
         </div>
+
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-text">Video tutorial</label>
+          <label className="block text-sm font-medium text-text">Videos tutorial</label>
           <input
             type="file"
             accept="video/*"
+            multiple
             onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const supabase = createClient();
-              const path = `dishes/${Date.now()}_${file.name}`;
-              const { data, error } = await supabase.storage.from("dish-videos").upload(path, file);
-              if (error) {
-                setError("Erro no upload do video: " + error.message);
-                return;
+              const files = Array.from(e.target.files || []);
+              for (const file of files) {
+                const path = await uploadVideo(file);
+                if (path) setVideos(prev => [...prev, path]);
               }
-              setVideoPath(data.path);
             }}
             className="block w-full text-sm text-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
           />
-          {videoPath && (
-            <div className="mt-2">
-              <video src={`https://facdbydtkqabmxkdcugp.supabase.co/storage/v1/object/public/dish-videos/${videoPath}`} className="w-64 rounded-lg" controls />
-              <button type="button" onClick={() => setVideoPath("")} className="text-sm text-red-600 mt-1">Remover</button>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {videos.map((vid, idx) => (
+              <div key={idx} className="relative">
+                <video src={`https://facdbydtkqabmxkdcugp.supabase.co/storage/v1/object/public/dish-videos/${vid}`} className="w-32 rounded-lg" controls />
+                <button type="button" onClick={() => setVideos(prev => prev.filter((_, i) => i !== idx))} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">×</button>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
