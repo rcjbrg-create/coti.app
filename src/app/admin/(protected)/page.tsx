@@ -1,10 +1,10 @@
 import { requireAdmin } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { UtensilsCrossed, ChefHat, ClipboardList, FolderOpen, CheckCircle, FileText, Clock, TrendingUp, Plus } from "lucide-react";
+import { UtensilsCrossed, ChefHat, ClipboardList, FolderOpen, CheckCircle, FileText, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
 import Image from "next/image";
+import { DashboardStats } from "@/components/admin/dashboard-stats";
 
 export default async function AdminDashboard() {
   await requireAdmin();
@@ -46,47 +46,15 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Pratos: publicados vs rascunhos */}
-      <div className="px-4 mb-4">
-        <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide mb-2">Pratos</h2>
-        <div className="grid grid-cols-3 gap-3">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="p-4 bg-surface rounded-2xl border border-border text-center hover:shadow-lg transition-shadow"
-          >
-            <p className="text-3xl font-bold text-text">{totalDishes}</p>
-            <p className="text-xs text-text-muted mt-1">Total</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="p-4 bg-green-50 rounded-2xl border border-green-200 text-center hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <CheckCircle size={14} className="text-green-600" />
-              <p className="text-3xl font-bold text-green-700">{publishedCount || 0}</p>
-            </div>
-            <p className="text-xs text-green-600 mt-1">Publicados</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 text-center hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <FileText size={14} className="text-yellow-600" />
-              <p className="text-3xl font-bold text-yellow-700">{draftCount || 0}</p>
-            </div>
-            <p className="text-xs text-yellow-600 mt-1">Rascunhos</p>
-          </motion.div>
-        </div>
-      </div>
+      <DashboardStats
+        totalDishes={totalDishes}
+        publishedCount={publishedCount || 0}
+        draftCount={draftCount || 0}
+        categoryCount={categoryCount || 0}
+        stationCount={stationCount || 0}
+        checklistCount={checklistCount || 0}
+      />
 
-      {/* Outros modulos */}
       <div className="px-4 mb-6">
         <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide mb-2">Modulos</h2>
         <div className="grid grid-cols-3 gap-3">
@@ -123,45 +91,38 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Ultimos pratos editados */}
       <div className="px-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide">Ultimos editados</h2>
           <Link href="/admin/pratos" className="text-xs text-primary hover:underline">Ver todos</Link>
         </div>
         <div className="space-y-2">
-          {(recentDishes || []).map((dish, index) => (
-            <motion.div
+          {(recentDishes || []).map((dish) => (
+            <Link
               key={dish.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
+              href={`/admin/pratos/${dish.id}`}
+              className="flex items-center gap-3 p-3 bg-surface rounded-xl border border-border hover:shadow-md hover:border-primary/30 transition-all"
             >
-              <Link
-                href={`/admin/pratos/${dish.id}`}
-                className="flex items-center gap-3 p-3 bg-surface rounded-xl border border-border hover:shadow-md hover:border-primary/30 transition-all"
-              >
-                <UtensilsCrossed size={16} className="text-text-muted shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-text truncate">{dish.name}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <Clock size={11} className="text-text-muted" />
-                    <span className="text-xs text-text-muted">
-                      {new Date(dish.updated_at).toLocaleDateString("pt-BR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
+              <UtensilsCrossed size={16} className="text-text-muted shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-text truncate">{dish.name}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <Clock size={11} className="text-text-muted" />
+                  <span className="text-xs text-text-muted">
+                    {new Date(dish.updated_at).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
                 </div>
-                <Badge variant={dish.is_published ? "success" : "warning"}>
-                  {dish.is_published ? "Publicado" : "Rascunho"}
-                </Badge>
-              </Link>
-            </motion.div>
+              </div>
+              <Badge variant={dish.is_published ? "success" : "warning"}>
+                {dish.is_published ? "Publicado" : "Rascunho"}
+              </Badge>
+            </Link>
           ))}
           {(!recentDishes || recentDishes.length === 0) && (
             <p className="text-sm text-text-muted text-center py-6">Nenhum prato cadastrado ainda.</p>
