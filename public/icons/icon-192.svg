@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="COTI Restaurante">
+  <rect width="192" height="192" rx="48" fill="#1f4e79" />
+  <rect x="24" y="24" width="144" height="144" rx="36" fill="#f7f4ee" />
+  <path d="M62 98c0-20.987 17.013-38 38-38h18v20H100c-9.941 0-18 8.059-18 18s8.059 18 18 18h32v20h-32c-20.987 0-38-17.013-38-38Z" fill="#1f4e79"/>
+  <circle cx="136" cy="68" r="16" fill="#d6c5a7" />
+</svg>
