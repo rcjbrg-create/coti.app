@@ -32,6 +32,8 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [platingNotes, setPlatingNotes] = useState(dish?.plating_notes || "");
   const [prepTime, setPrepTime] = useState(dish?.prep_time_minutes || 0);
   const [isPublished, setIsPublished] = useState(dish?.is_published || false);
+  const [heroImagePath, setHeroImagePath] = useState(dish?.hero_image_path || "");
+  const [videoPath, setVideoPath] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +75,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
       plating_notes: platingNotes || null,
       prep_time_minutes: prepTime || null,
       is_published: isPublished,
+      hero_image_path: heroImagePath || null,
     };
 
     if (dish) {
@@ -82,12 +85,36 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         setLoading(false);
         return;
       }
+      // Save video to dish_media if uploaded
+      if (videoPath) {
+        await supabase.from("dish_media").insert({
+          dish_id: dish.id,
+          media_type: "video",
+          storage_bucket: "dish-videos",
+          storage_path: videoPath,
+          file_name: videoPath.split("/").pop(),
+          mime_type: "video/mp4",
+          is_primary: true,
+        });
+      }
     } else {
-      const { error: dbError } = await supabase.from("dishes").insert(data);
+      const { data: newDish, error: dbError } = await supabase.from("dishes").insert(data).select().single();
       if (dbError) {
         setError(dbError.message);
         setLoading(false);
         return;
+      }
+      // Save video to dish_media if uploaded
+      if (videoPath && newDish) {
+        await supabase.from("dish_media").insert({
+          dish_id: newDish.id,
+          media_type: "video",
+          storage_bucket: "dish-videos",
+          storage_path: videoPath,
+          file_name: videoPath.split("/").pop(),
+          mime_type: "video/mp4",
+          is_primary: true,
+        });
       }
     }
 
@@ -150,6 +177,62 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         </div>
       </section>
 
+      <section className="space-y-4">
+        <h3 className="text-lg font-bold text-primary">Midias</h3>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-text">Foto do prato (hero image)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const supabase = createClient();
+              const path = `dishes/${Date.now()}_${file.name}`;
+              const { data, error } = await supabase.storage.from("dish-images").upload(path, file);
+              if (error) {
+                setError("Erro no upload da imagem: " + error.message);
+                return;
+              }
+              setHeroImagePath(data.path);
+            }}
+            className="block w-full text-sm text-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+          />
+          {heroImagePath && (
+            <div className="mt-2">
+              <img src={`https://facdbydtkqabmxkdcugp.supabase.co/storage/v1/object/public/dish-images/${heroImagePath}`} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+              <button type="button" onClick={() => setHeroImagePath("")} className="text-sm text-red-600 mt-1">Remover</button>
+            </div>
+          )}
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-text">Video tutorial</label>
+          <input
+            type="file"
+            accept="video/*"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const supabase = createClient();
+              const path = `dishes/${Date.now()}_${file.name}`;
+              const { data, error } = await supabase.storage.from("dish-videos").upload(path, file);
+              if (error) {
+                setError("Erro no upload do video: " + error.message);
+                return;
+              }
+              setVideoPath(data.path);
+            }}
+            className="block w-full text-sm text-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+          />
+          {videoPath && (
+            <div className="mt-2">
+              <video src={`https://facdbydtkqabmxkdcugp.supabase.co/storage/v1/object/public/dish-videos/${videoPath}`} className="w-64 rounded-lg" controls />
+              <button type="button" onClick={() => setVideoPath("")} className="text-sm text-red-600 mt-1">Remover</button>
+            </div>
+          )}
+        </div>
+      </section>
+
       {dish && (
         <>
           <section className="space-y-4">
@@ -163,7 +246,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-primary">Midias</h3>
+            <h3 className="text-lg font-bold text-primary">Midias Adicionais</h3>
             <MediaUpload dishId={dish.id} />
           </section>
         </>
