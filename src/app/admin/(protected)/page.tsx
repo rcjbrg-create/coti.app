@@ -1,8 +1,10 @@
 import { requireAdmin } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { UtensilsCrossed, ChefHat, ClipboardList, FolderOpen, CheckCircle, FileText, Clock } from "lucide-react";
+import { UtensilsCrossed, ChefHat, ClipboardList, FolderOpen, CheckCircle, FileText, Clock, TrendingUp, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default async function AdminDashboard() {
   await requireAdmin();
@@ -33,32 +35,54 @@ export default async function AdminDashboard() {
   return (
     <div className="pb-8">
       <div className="px-4 pt-6 pb-4">
-        <h1 className="text-2xl font-bold text-primary">Painel Administrativo</h1>
-        <p className="text-text-muted mt-1">Gerencie o conteudo operacional do COTI</p>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-primary flex items-center justify-center">
+            <Image src="/logo-coti.png" alt="COTI" width={40} height={40} className="object-cover" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-primary">Painel Administrativo</h1>
+            <p className="text-text-muted mt-1">Gerencie o conteudo operacional do COTI</p>
+          </div>
+        </div>
       </div>
 
       {/* Pratos: publicados vs rascunhos */}
       <div className="px-4 mb-4">
         <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide mb-2">Pratos</h2>
         <div className="grid grid-cols-3 gap-3">
-          <div className="p-4 bg-surface rounded-2xl border border-border text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-4 bg-surface rounded-2xl border border-border text-center hover:shadow-lg transition-shadow"
+          >
             <p className="text-3xl font-bold text-text">{totalDishes}</p>
             <p className="text-xs text-text-muted mt-1">Total</p>
-          </div>
-          <div className="p-4 bg-green-50 rounded-2xl border border-green-200 text-center">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-4 bg-green-50 rounded-2xl border border-green-200 text-center hover:shadow-lg transition-shadow"
+          >
             <div className="flex items-center justify-center gap-1 mb-1">
               <CheckCircle size={14} className="text-green-600" />
               <p className="text-3xl font-bold text-green-700">{publishedCount || 0}</p>
             </div>
             <p className="text-xs text-green-600 mt-1">Publicados</p>
-          </div>
-          <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 text-center">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 text-center hover:shadow-lg transition-shadow"
+          >
             <div className="flex items-center justify-center gap-1 mb-1">
               <FileText size={14} className="text-yellow-600" />
               <p className="text-3xl font-bold text-yellow-700">{draftCount || 0}</p>
             </div>
             <p className="text-xs text-yellow-600 mt-1">Rascunhos</p>
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -68,25 +92,31 @@ export default async function AdminDashboard() {
         <div className="grid grid-cols-3 gap-3">
           <Link
             href="/admin/categorias"
-            className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-md transition-shadow"
+            className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
-            <FolderOpen size={22} className="text-primary" />
+            <div className="p-2 rounded-xl bg-primary/10">
+              <FolderOpen size={22} className="text-primary" />
+            </div>
             <span className="text-xl font-bold text-primary">{categoryCount || 0}</span>
             <span className="text-xs text-text-muted">Categorias</span>
           </Link>
           <Link
             href="/admin/pracas"
-            className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-md transition-shadow"
+            className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
-            <ChefHat size={22} className="text-primary" />
+            <div className="p-2 rounded-xl bg-primary/10">
+              <ChefHat size={22} className="text-primary" />
+            </div>
             <span className="text-xl font-bold text-primary">{stationCount || 0}</span>
             <span className="text-xs text-text-muted">Pracas</span>
           </Link>
           <Link
             href="/admin/checklists"
-            className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-md transition-shadow"
+            className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
-            <ClipboardList size={22} className="text-primary" />
+            <div className="p-2 rounded-xl bg-primary/10">
+              <ClipboardList size={22} className="text-primary" />
+            </div>
             <span className="text-xl font-bold text-primary">{checklistCount || 0}</span>
             <span className="text-xs text-text-muted">Checklists</span>
           </Link>
@@ -100,32 +130,38 @@ export default async function AdminDashboard() {
           <Link href="/admin/pratos" className="text-xs text-primary hover:underline">Ver todos</Link>
         </div>
         <div className="space-y-2">
-          {(recentDishes || []).map((dish) => (
-            <Link
+          {(recentDishes || []).map((dish, index) => (
+            <motion.div
               key={dish.id}
-              href={`/admin/pratos/${dish.id}`}
-              className="flex items-center gap-3 p-3 bg-surface rounded-xl border border-border hover:shadow-sm"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
             >
-              <UtensilsCrossed size={16} className="text-text-muted shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text truncate">{dish.name}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Clock size={11} className="text-text-muted" />
-                  <span className="text-xs text-text-muted">
-                    {new Date(dish.updated_at).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+              <Link
+                href={`/admin/pratos/${dish.id}`}
+                className="flex items-center gap-3 p-3 bg-surface rounded-xl border border-border hover:shadow-md hover:border-primary/30 transition-all"
+              >
+                <UtensilsCrossed size={16} className="text-text-muted shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-text truncate">{dish.name}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <Clock size={11} className="text-text-muted" />
+                    <span className="text-xs text-text-muted">
+                      {new Date(dish.updated_at).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <Badge variant={dish.is_published ? "success" : "warning"}>
-                {dish.is_published ? "Publicado" : "Rascunho"}
-              </Badge>
-            </Link>
+                <Badge variant={dish.is_published ? "success" : "warning"}>
+                  {dish.is_published ? "Publicado" : "Rascunho"}
+                </Badge>
+              </Link>
+            </motion.div>
           ))}
           {(!recentDishes || recentDishes.length === 0) && (
             <p className="text-sm text-text-muted text-center py-6">Nenhum prato cadastrado ainda.</p>

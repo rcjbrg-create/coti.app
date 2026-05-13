@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase/browser";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { Lock, Mail, ChefHat } from "lucide-react";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -35,38 +38,106 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-beige p-4">
-      <div className="w-full max-w-sm bg-surface rounded-2xl shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-primary">COTI Admin</h1>
-          <p className="text-sm text-text-muted mt-1">Painel de gestao operacional</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-beige to-primary/10 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-sm">
+        <div className="bg-surface rounded-3xl shadow-2xl p-8 border border-border/50">
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-center mb-8">
+            <div className="relative w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-primary flex items-center justify-center shadow-lg">
+              <Image src="/logo-coti.png" alt="COTI" width={80} height={80} className="object-cover" />
+            </div>
+            <h1 className="text-2xl font-bold text-primary">COTI Admin</h1>
+            <p className="text-sm text-text-muted mt-1">Painel de gestao operacional</p>
+          </motion.div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <Input
-            id="email"
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@coti.com"
-            required
-          />
-          <Input
-            id="password"
-            label="Senha"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-          />
-          {error && <p className="text-sm text-error text-center">{error}</p>}
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
-      </div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required
+                  className="pl-10"
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Senha"
+                  required
+                  className="pl-10"
+                />
+              </div>
+            </motion.div>
+
+            {error && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-sm text-error text-center">
+                {error}
+              </motion.p>
+            )}
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-shadow"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Entrando...
+                  </span>
+                ) : (
+                  "Entrar"
+                )}
+              </Button>
+            </motion.div>
+          </form>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="mt-6 text-center">
+            <p className="text-xs text-text-muted">
+              COTI Restaurante - Padronizacao Operacional
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 }
