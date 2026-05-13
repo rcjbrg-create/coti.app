@@ -4,9 +4,11 @@ export const categoriaSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z
     .string()
-    .nullable()
     .optional()
-    .transform((v) => v?.trim() || null),
+    .transform((v) => {
+      const trimmed = v?.trim();
+      return trimmed || null;
+    }),
   display_order: z.coerce.number().int().min(0).default(0),
 });
 
