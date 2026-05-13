@@ -23,8 +23,6 @@ function getLabel(segment: string): string {
 export function AdminBreadcrumbs() {
   const pathname = usePathname();
 
-  if (pathname === "/admin/login") return null;
-
   const segments = pathname.split("/").filter(Boolean);
   // segments = ["admin", "pratos", ...]
 

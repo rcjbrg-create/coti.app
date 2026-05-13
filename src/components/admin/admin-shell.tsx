@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminBreadcrumbs } from "./admin-breadcrumbs";
@@ -16,12 +15,7 @@ interface Props {
 
 export function AdminShell({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
-
-  if (pathname === "/admin/login") {
-    return <>{children}</>;
-  }
 
   const handleLogout = async () => {
     const supabase = createClient();
