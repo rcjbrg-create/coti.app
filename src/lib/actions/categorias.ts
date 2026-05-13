@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/auth/guards";
 import { revalidatePath } from "next/cache";
 import { slugify } from "@/lib/utils";
 import { categoriaSchema, type CategoriaInput } from "@/lib/validations/categoria";
@@ -10,8 +9,6 @@ import { z } from "zod";
 export async function createCategoria(
   input: CategoriaInput
 ): Promise<{ success: boolean; error?: string; id?: string }> {
-  await requireAdmin();
-
   try {
     const parsed = categoriaSchema.parse(input);
     const supabase = createClient();
@@ -44,8 +41,6 @@ export async function updateCategoria(
   id: string,
   input: CategoriaInput
 ): Promise<{ success: boolean; error?: string }> {
-  await requireAdmin();
-
   try {
     const parsed = categoriaSchema.parse(input);
     const supabase = createClient();
@@ -77,8 +72,6 @@ export async function updateCategoria(
 export async function deleteCategoria(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
-  await requireAdmin();
-
   const supabase = createClient();
   const { error } = await supabase.from("categories").delete().eq("id", id);
 
@@ -93,8 +86,6 @@ export async function reorderCategoria(
   id: string,
   direction: "up" | "down"
 ): Promise<{ success: boolean; error?: string }> {
-  await requireAdmin();
-
   const supabase = createClient();
   const { data: all, error: fetchError } = await supabase
     .from("categories")
