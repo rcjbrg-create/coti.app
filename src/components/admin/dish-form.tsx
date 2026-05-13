@@ -97,33 +97,54 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
       dishId = newDish.id;
     }
 
-    // Save all images to dish_media
+    // Save only NEW images (not already in dish_media)
     if (heroImages.length > 0 && dishId) {
+      // Get existing images
+      const { data: existingMedia } = await supabase
+        .from("dish_media")
+        .select("storage_path")
+        .eq("dish_id", dishId)
+        .eq("media_type", "image");
+      
+      const existingPaths = new Set(existingMedia?.map(m => m.storage_path) || []);
+      
       for (let i = 0; i < heroImages.length; i++) {
-        await supabase.from("dish_media").insert({
-          dish_id: dishId,
-          media_type: "image",
-          storage_bucket: "dish-images",
-          storage_path: heroImages[i],
-          file_name: heroImages[i].split("/").pop(),
-          mime_type: "image/jpeg",
-          is_primary: i === 0,
-        });
+        if (!existingPaths.has(heroImages[i])) {
+          await supabase.from("dish_media").insert({
+            dish_id: dishId,
+            media_type: "image",
+            storage_bucket: "dish-images",
+            storage_path: heroImages[i],
+            file_name: heroImages[i].split("/").pop(),
+            mime_type: "image/jpeg",
+            is_primary: i === 0 && existingPaths.size === 0,
+          });
+        }
       }
     }
 
-    // Save all videos to dish_media
+    // Save only NEW videos
     if (videos.length > 0 && dishId) {
+      const { data: existingMedia } = await supabase
+        .from("dish_media")
+        .select("storage_path")
+        .eq("dish_id", dishId)
+        .eq("media_type", "video");
+      
+      const existingPaths = new Set(existingMedia?.map(m => m.storage_path) || []);
+      
       for (let i = 0; i < videos.length; i++) {
-        await supabase.from("dish_media").insert({
-          dish_id: dishId,
-          media_type: "video",
-          storage_bucket: "dish-videos",
-          storage_path: videos[i],
-          file_name: videos[i].split("/").pop(),
-          mime_type: "video/mp4",
-          is_primary: i === 0,
-        });
+        if (!existingPaths.has(videos[i])) {
+          await supabase.from("dish_media").insert({
+            dish_id: dishId,
+            media_type: "video",
+            storage_bucket: "dish-videos",
+            storage_path: videos[i],
+            file_name: videos[i].split("/").pop(),
+            mime_type: "video/mp4",
+            is_primary: i === 0 && existingPaths.size === 0,
+          });
+        }
       }
     }
 

@@ -17,6 +17,6 @@ export function formatQuantity(quantity: number, unit: string): string {
 }
 
 export function getStorageUrl(bucket: string, path: string): string {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://facdbydtkqabmxkdcugp.supabase.co";
   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 }
