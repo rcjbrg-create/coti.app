@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/browser";
 import { slugify } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { IngredientFieldArray } from "./ingredient-field-array";
 import { PreparationStepsEditor } from "./preparation-steps-editor";
 import { MediaUpload } from "./media-upload";
@@ -195,12 +195,22 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
             </select>
           </div>
         </div>
-        <Textarea id="desc" label="Descricao curta" value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} />
+        <RichTextEditor
+          label="Descricao curta"
+          value={shortDesc}
+          onChange={setShortDesc}
+          placeholder="Descreva o prato..."
+        />
         <div className="grid grid-cols-2 gap-4">
           <Input id="yield" label="Rendimento" value={yieldInfo} onChange={(e) => setYieldInfo(e.target.value)} placeholder="Ex: 10 porcoes" />
           <Input id="prep" label="Tempo de preparo (min)" type="number" value={prepTime} onChange={(e) => setPrepTime(Number(e.target.value))} />
         </div>
-        <Textarea id="plating" label="Observacoes de montagem/empratamento" value={platingNotes} onChange={(e) => setPlatingNotes(e.target.value)} />
+        <RichTextEditor
+          label="Observacoes de montagem/empratamento"
+          value={platingNotes}
+          onChange={setPlatingNotes}
+          placeholder="Instrucoes de montagem..."
+        />
         <div className="flex items-center justify-between p-4 rounded-xl border-2 border-dashed transition-colors"
           style={{ borderColor: isPublished ? '#16a34a' : '#d97706', backgroundColor: isPublished ? '#f0fdf4' : '#fffbeb' }}>
           <div>

@@ -5,6 +5,8 @@ import { getActiveCategories } from "@/lib/queries/categorias";
 import { getActiveStations } from "@/lib/queries/pracas";
 import Link from "next/link";
 import { ClipboardList } from "lucide-react";
+import { FadeIn, SlideUp, StaggerContainer, StaggerItem } from "@/components/ui/animations";
+import Image from "next/image";
 
 export default async function HomePage() {
   const [categories, stations] = await Promise.all([
@@ -14,31 +16,50 @@ export default async function HomePage() {
 
   return (
     <div>
-      <div className="pb-4">
-        <h1 className="text-2xl font-bold text-primary">COTI Restaurante</h1>
-        <p className="text-text-muted mt-1">Gestao Operacional e Padronizacao</p>
-      </div>
-
-      <SectionHeader title="Categorias" subtitle="Navegue por tipo de prato" />
-      <CategoryGrid categories={categories} />
-
-      <SectionHeader title="Pracas" subtitle="Navegue por estacao de trabalho" />
-      <StationGrid stations={stations} />
-
-      <div className="mt-6 px-4">
-        <Link
-          href="/checklist"
-          className="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-border hover:shadow-md transition-shadow active:scale-[0.98]"
-        >
-          <div className="p-3 rounded-xl bg-green-50 text-green-700">
-            <ClipboardList size={24} />
+      <FadeIn>
+        <div className="pb-4 flex items-center gap-3">
+          <div className="relative w-12 h-12 rounded-full overflow-hidden bg-primary flex items-center justify-center">
+            <Image src="/logo-coti.png" alt="COTI" width={48} height={48} className="object-cover" />
           </div>
           <div>
-            <h3 className="font-semibold text-text">Mise en Place</h3>
-            <p className="text-sm text-text-muted">Checklists por praca e turno</p>
+            <h1 className="text-2xl font-bold text-primary">COTI Restaurante</h1>
+            <p className="text-text-muted mt-1">Gestao Operacional e Padronizacao</p>
           </div>
-        </Link>
-      </div>
+        </div>
+      </FadeIn>
+
+      <SlideUp delay={0.1}>
+        <SectionHeader title="Categorias" subtitle="Navegue por tipo de prato" />
+      </SlideUp>
+      
+      <StaggerContainer>
+        <CategoryGrid categories={categories} />
+      </StaggerContainer>
+
+      <SlideUp delay={0.2}>
+        <SectionHeader title="Pracas" subtitle="Navegue por estacao de trabalho" />
+      </SlideUp>
+      
+      <StaggerContainer>
+        <StationGrid stations={stations} />
+      </StaggerContainer>
+
+      <SlideUp delay={0.3}>
+        <div className="mt-6 px-4">
+          <Link
+            href="/checklist"
+            className="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300 active:scale-[0.98]"
+          >
+            <div className="p-3 rounded-xl bg-green-50 text-green-700">
+              <ClipboardList size={24} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-text">Mise en Place</h3>
+              <p className="text-sm text-text-muted">Checklists por praca e turno</p>
+            </div>
+          </Link>
+        </div>
+      </SlideUp>
     </div>
   );
 }
