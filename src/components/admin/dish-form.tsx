@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
 import { slugify } from "@/lib/utils";
@@ -25,8 +25,6 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(dish?.name || "");
-  const [categoryId, setCategoryId] = useState(dish?.category_id || "");
-  const [subCategoryId, setSubCategoryId] = useState(dish?.category_id || "");
   const [stationId, setStationId] = useState(dish?.station_id || "");
   const [shortDesc, setShortDesc] = useState(dish?.short_description || "");
   const [yieldInfo, setYieldInfo] = useState(dish?.yield_info || "");
@@ -36,28 +34,26 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [heroImages, setHeroImages] = useState<string[]>(dish?.hero_image_path ? [dish.hero_image_path] : []);
   const [videos, setVideos] = useState<string[]>([]);
 
+  // Detectar categoria inicial
+  const getInitialCategoryState = () => {
+    if (!dish?.category_id) return { mainCategoryId: "", subCategoryId: "" };
+    
+    const currentCategory = categories.find(cat => cat.id === dish.category_id);
+    if (currentCategory?.parent_id) {
+      // É uma sub-categoria
+      return { mainCategoryId: currentCategory.parent_id, subCategoryId: currentCategory.id };
+    }
+    // É uma categoria principal
+    return { mainCategoryId: dish.category_id, subCategoryId: "" };
+  };
+
+  const initialState = getInitialCategoryState();
+  const [categoryId, setCategoryId] = useState(initialState.mainCategoryId);
+  const [subCategoryId, setSubCategoryId] = useState(initialState.subCategoryId);
+
   // Separar categorias principais (sem parent_id) e sub-categorias (com parent_id)
   const mainCategories = categories.filter(cat => !cat.parent_id);
   const subCategories = categories.filter(cat => cat.parent_id === categoryId);
-
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // Detectar se o prato está em uma sub-categoria e ajustar os estados
-  useEffect(() => {
-    if (!isInitialized && dish?.category_id && categories.length > 0) {
-      const currentCategory = categories.find(cat => cat.id === dish.category_id);
-      if (currentCategory?.parent_id) {
-        // É uma sub-categoria
-        setCategoryId(currentCategory.parent_id);
-        setSubCategoryId(currentCategory.id);
-      } else {
-        // É uma categoria principal
-        setCategoryId(dish.category_id);
-        setSubCategoryId("");
-      }
-      setIsInitialized(true);
-    }
-  }, [dish?.category_id, categories, isInitialized]);
 
   const handleCategoryChange = (newCategoryId: string) => {
     setCategoryId(newCategoryId);
