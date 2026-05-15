@@ -1,17 +1,12 @@
 import { SectionHeader } from "@/components/layout/section-header";
 import { CategoryGrid } from "@/components/categorias/category-grid";
-import { StationGrid } from "@/components/pracas/station-grid";
 import { getActiveCategories } from "@/lib/queries/categorias";
-import { getActiveStations } from "@/lib/queries/pracas";
 import Link from "next/link";
 import { ClipboardList } from "lucide-react";
 import Image from "next/image";
 
 export default async function HomePage() {
-  const [categories, stations] = await Promise.all([
-    getActiveCategories(),
-    getActiveStations(),
-  ]);
+  const categories = await getActiveCategories();
 
   return (
     <div>
@@ -25,11 +20,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <SectionHeader title="Categorias" subtitle="Navegue por tipo de prato" />
+      <SectionHeader title="Categorias" subtitle="Selecione uma categoria para comecar" />
       <CategoryGrid categories={categories} />
-
-      <SectionHeader title="Pracas" subtitle="Navegue por estacao de trabalho" />
-      <StationGrid stations={stations} />
 
       <div className="mt-6 px-4">
         <Link
