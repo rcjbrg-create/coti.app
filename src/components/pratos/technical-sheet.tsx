@@ -38,7 +38,7 @@ export function TechnicalSheet({ dish, ingredients, steps, media }: Props) {
             {dish.station && <Badge>{(dish.station as any).name}</Badge>}
           </div>
 
-          {dish.short_description && (
+          {dish.short_description && dish.short_description.trim() !== '' && (
             <div 
               className="text-sm text-text-muted mt-1 rich-content"
               dangerouslySetInnerHTML={{ __html: dish.short_description }}
@@ -64,7 +64,7 @@ export function TechnicalSheet({ dish, ingredients, steps, media }: Props) {
           <PreparationSteps steps={steps} />
         </section>
 
-        {dish.plating_notes && (
+        {dish.plating_notes && dish.plating_notes.trim() !== '' && (
           <section>
             <h2 className="text-lg font-bold text-primary mb-3">Montagem e Empratamento</h2>
             <div 
