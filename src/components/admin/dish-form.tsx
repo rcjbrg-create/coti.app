@@ -93,7 +93,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
     const data = {
       name,
       slug: slugify(name),
-      category_id: subCategoryId || categoryId, // Usa sub-categoria se selecionada, senão usa a principal
+      category_id: subCategoryId.trim() !== "" ? subCategoryId : categoryId, // Usa sub-categoria se selecionada, senão usa a principal
       station_id: stationId,
       short_description: shortDesc || null,
       yield_info: yieldInfo || null,
