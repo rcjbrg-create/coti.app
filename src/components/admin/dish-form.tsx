@@ -36,14 +36,21 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
 
   // Detectar categoria inicial
   const getInitialCategoryState = () => {
+    console.log("DEBUG - dish?.category_id:", dish?.category_id);
+    console.log("DEBUG - categories:", categories);
+    
     if (!dish?.category_id) return { mainCategoryId: "", subCategoryId: "" };
     
     const currentCategory = categories.find(cat => cat.id === dish.category_id);
+    console.log("DEBUG - currentCategory:", currentCategory);
+    
     if (currentCategory?.parent_id) {
       // É uma sub-categoria
+      console.log("DEBUG - É sub-categoria, parent_id:", currentCategory.parent_id);
       return { mainCategoryId: currentCategory.parent_id, subCategoryId: currentCategory.id };
     }
     // É uma categoria principal
+    console.log("DEBUG - É categoria principal");
     return { mainCategoryId: dish.category_id, subCategoryId: "" };
   };
 
