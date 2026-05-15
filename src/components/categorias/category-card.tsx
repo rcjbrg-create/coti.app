@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Category } from "@/types/dish";
 import { UtensilsCrossed } from "lucide-react";
+import { getStorageUrl } from "@/lib/utils";
 
 interface Props {
   category: Category;
@@ -15,7 +16,7 @@ export function CategoryCard({ category }: Props) {
         <div className="relative aspect-[4/3] overflow-hidden bg-beige-dark flex items-center justify-center">
           {category.cover_image_path ? (
             <Image
-              src={category.cover_image_path}
+              src={getStorageUrl("category-covers", category.cover_image_path)}
               alt={category.name}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"

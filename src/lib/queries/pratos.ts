@@ -20,16 +20,26 @@ const DISH_LIST_SELECT =
 
 /**
  * Returns published dishes for a given category id.
- * Uses the `dishes` table with joined category and station names.
+ * Also includes dishes from sub-categories (categories with this category as parent_id).
  */
 export async function getPublishedDishesByCategory(
   categoryId: string,
 ): Promise<DishListItem[]> {
   const supabase = createClient();
+  
+  // Get all sub-category IDs
+  const { data: subCategories } = await supabase
+    .from("categories")
+    .select("id")
+    .eq("parent_id", categoryId);
+  
+  const subCategoryIds = subCategories?.map(c => c.id) || [];
+  const allCategoryIds = [categoryId, ...subCategoryIds];
+  
   const { data, error } = await supabase
     .from("dishes")
     .select(DISH_LIST_SELECT)
-    .eq("category_id", categoryId)
+    .in("category_id", allCategoryIds)
     .eq("is_published", true)
     .eq("is_active", true)
     .order("name");
