@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Category } from "@/types/database";
 
 /**
- * Returns all active categories ordered by display_order.
+ * Returns only main categories (without parent_id) ordered by display_order.
  */
 export async function getActiveCategories(): Promise<Category[]> {
   const supabase = createClient();
@@ -10,10 +10,31 @@ export async function getActiveCategories(): Promise<Category[]> {
     .from("categories")
     .select("*")
     .eq("is_active", true)
+    .is("parent_id", null)
     .order("display_order");
 
   if (error) {
     console.error("[getActiveCategories]", error.message);
+    return [];
+  }
+
+  return (data as Category[]) ?? [];
+}
+
+/**
+ * Returns sub-categories for a given parent category id.
+ */
+export async function getSubCategories(parentId: string): Promise<Category[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .eq("is_active", true)
+    .eq("parent_id", parentId)
+    .order("display_order");
+
+  if (error) {
+    console.error("[getSubCategories]", error.message);
     return [];
   }
 
