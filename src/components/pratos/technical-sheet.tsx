@@ -39,7 +39,10 @@ export function TechnicalSheet({ dish, ingredients, steps, media }: Props) {
           </div>
 
           {dish.short_description && (
-            <p className="text-sm text-text-muted mt-1">{dish.short_description}</p>
+            <div 
+              className="text-sm text-text-muted mt-1 rich-content"
+              dangerouslySetInnerHTML={{ __html: dish.short_description }}
+            />
           )}
 
           <div className="flex flex-wrap gap-3 mt-3 text-xs text-text-muted">
@@ -64,7 +67,10 @@ export function TechnicalSheet({ dish, ingredients, steps, media }: Props) {
         {dish.plating_notes && (
           <section>
             <h2 className="text-lg font-bold text-primary mb-3">Montagem e Empratamento</h2>
-            <p className="text-sm text-text leading-relaxed">{dish.plating_notes}</p>
+            <div 
+              className="text-sm text-text leading-relaxed rich-content"
+              dangerouslySetInnerHTML={{ __html: dish.plating_notes }}
+            />
           </section>
         )}
 
