@@ -40,9 +40,11 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const mainCategories = categories.filter(cat => !cat.parent_id);
   const subCategories = categories.filter(cat => cat.parent_id === categoryId);
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Detectar se o prato está em uma sub-categoria e ajustar os estados
   useEffect(() => {
-    if (dish?.category_id) {
+    if (!isInitialized && dish?.category_id && categories.length > 0) {
       const currentCategory = categories.find(cat => cat.id === dish.category_id);
       if (currentCategory?.parent_id) {
         // É uma sub-categoria
@@ -53,8 +55,9 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         setCategoryId(dish.category_id);
         setSubCategoryId("");
       }
+      setIsInitialized(true);
     }
-  }, [dish?.category_id, categories]);
+  }, [dish?.category_id, categories, isInitialized]);
 
   const handleCategoryChange = (newCategoryId: string) => {
     setCategoryId(newCategoryId);
