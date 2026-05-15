@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
 import { slugify } from "@/lib/utils";
@@ -34,29 +34,25 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [heroImages, setHeroImages] = useState<string[]>(dish?.hero_image_path ? [dish.hero_image_path] : []);
   const [videos, setVideos] = useState<string[]>([]);
 
-  // Detectar categoria inicial
-  const getInitialCategoryState = () => {
-    console.log("DEBUG - dish?.category_id:", dish?.category_id);
-    console.log("DEBUG - categories:", categories);
-    
-    if (!dish?.category_id) return { mainCategoryId: "", subCategoryId: "" };
-    
-    const currentCategory = categories.find(cat => cat.id === dish.category_id);
-    console.log("DEBUG - currentCategory:", currentCategory);
-    
-    if (currentCategory?.parent_id) {
-      // É uma sub-categoria
-      console.log("DEBUG - É sub-categoria, parent_id:", currentCategory.parent_id);
-      return { mainCategoryId: currentCategory.parent_id, subCategoryId: currentCategory.id };
-    }
-    // É uma categoria principal
-    console.log("DEBUG - É categoria principal");
-    return { mainCategoryId: dish.category_id, subCategoryId: "" };
-  };
+  // Estados para categoria com inicialização correta
+  const [categoryId, setCategoryId] = useState("");
+  const [subCategoryId, setSubCategoryId] = useState("");
 
-  const initialState = getInitialCategoryState();
-  const [categoryId, setCategoryId] = useState(initialState.mainCategoryId);
-  const [subCategoryId, setSubCategoryId] = useState(initialState.subCategoryId);
+  // Inicializar categorias quando o componente montar e categories estiver disponível
+  useEffect(() => {
+    if (dish?.category_id && categories.length > 0) {
+      const currentCategory = categories.find(cat => cat.id === dish.category_id);
+      if (currentCategory?.parent_id) {
+        // É uma sub-categoria
+        setCategoryId(currentCategory.parent_id);
+        setSubCategoryId(currentCategory.id);
+      } else {
+        // É uma categoria principal
+        setCategoryId(dish.category_id);
+        setSubCategoryId("");
+      }
+    }
+  }, [dish?.category_id, categories]);
 
   // Separar categorias principais (sem parent_id) e sub-categorias (com parent_id)
   const mainCategories = categories.filter(cat => !cat.parent_id);
@@ -131,7 +127,6 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
 
     // Save only NEW images (not already in dish_media)
     if (heroImages.length > 0 && dishId) {
-      // Get existing images
       const { data: existingMedia } = await supabase
         .from("dish_media")
         .select("storage_path")
@@ -211,6 +206,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
       <section className="space-y-4">
         <h3 className="text-lg font-bold text-primary">Informacoes do Prato</h3>
         <Input id="name" label="Nome do prato" value={name} onChange={(e) => setName(e.target.value)} required />
+        
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-text">Categoria Principal</label>
@@ -266,7 +262,8 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
           placeholder="Instrucoes de montagem..."
         />
         <div className="flex items-center justify-between p-4 rounded-xl border-2 border-dashed transition-colors"
-          style={{ borderColor: isPublished ? '#16a34a' : '#d97706', backgroundColor: isPublished ? '#f0fdf4' : '#fffbeb' }}>
+          style={{ borderColor: isPublished ? '#16a34a' : '#d97706', backgroundColor: isPublished ? '#f0fdf4' : '#fffbeb' }}
+        >
           <div>
             <p className="text-sm font-semibold" style={{ color: isPublished ? '#15803d' : '#b45309' }}>
               {isPublished ? 'Publicado' : 'Rascunho'}
