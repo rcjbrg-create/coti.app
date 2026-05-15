@@ -15,7 +15,7 @@ export default async function EditPratoPage({ params }: Props) {
 
   const [{ data: dish }, { data: categories }, { data: stations }, { data: ingredients }, { data: steps }] = await Promise.all([
     supabase.from("dishes").select("*").eq("id", id).single(),
-    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order"),
+    supabase.from("categories").select("id, name, parent_id").eq("is_active", true).order("display_order"),
     supabase.from("stations").select("id, name").eq("is_active", true).order("display_order"),
     supabase.from("dish_ingredients").select("*").eq("dish_id", id).order("display_order"),
     supabase.from("dish_steps").select("*").eq("dish_id", id).order("display_order"),

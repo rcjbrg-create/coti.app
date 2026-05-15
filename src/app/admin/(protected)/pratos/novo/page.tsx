@@ -7,7 +7,7 @@ export default async function NovoPratoPage() {
   await requireAdmin();
   const supabase = await createClient();
   const [{ data: categories }, { data: stations }] = await Promise.all([
-    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order"),
+    supabase.from("categories").select("id, name, parent_id").eq("is_active", true).order("display_order"),
     supabase.from("stations").select("id, name").eq("is_active", true).order("display_order"),
   ]);
 

@@ -14,7 +14,7 @@ import type { Dish, DishIngredient, DishStep } from "@/types/dish";
 
 interface Props {
   dish?: Dish;
-  categories: { id: string; name: string }[];
+  categories: { id: string; name: string; parent_id?: string | null }[];
   stations: { id: string; name: string }[];
   existingIngredients?: DishIngredient[];
   existingSteps?: DishStep[];
@@ -26,6 +26,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(dish?.name || "");
   const [categoryId, setCategoryId] = useState(dish?.category_id || "");
+  const [subCategoryId, setSubCategoryId] = useState("");
   const [stationId, setStationId] = useState(dish?.station_id || "");
   const [shortDesc, setShortDesc] = useState(dish?.short_description || "");
   const [yieldInfo, setYieldInfo] = useState(dish?.yield_info || "");
@@ -34,6 +35,15 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
   const [isPublished, setIsPublished] = useState(dish?.is_published || false);
   const [heroImages, setHeroImages] = useState<string[]>(dish?.hero_image_path ? [dish.hero_image_path] : []);
   const [videos, setVideos] = useState<string[]>([]);
+
+  // Separar categorias principais (sem parent_id) e sub-categorias (com parent_id)
+  const mainCategories = categories.filter(cat => !cat.parent_id);
+  const subCategories = categories.filter(cat => cat.parent_id === categoryId);
+
+  const handleCategoryChange = (newCategoryId: string) => {
+    setCategoryId(newCategoryId);
+    setSubCategoryId(""); // Reset sub-categoria quando mudar a principal
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +78,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
     const data = {
       name,
       slug: slugify(name),
-      category_id: categoryId,
+      category_id: subCategoryId || categoryId, // Usa sub-categoria se selecionada, senão usa a principal
       station_id: stationId,
       short_description: shortDesc || null,
       yield_info: yieldInfo || null,
@@ -181,19 +191,41 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         <Input id="name" label="Nome do prato" value={name} onChange={(e) => setName(e.target.value)} required />
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-text">Categoria</label>
-            <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text text-base">
+            <label className="block text-sm font-medium text-text">Categoria Principal</label>
+            <select 
+              value={categoryId} 
+              onChange={(e) => handleCategoryChange(e.target.value)} 
+              required 
+              className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text text-base"
+            >
               <option value="">Selecione...</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {mainCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-text">Praca</label>
-            <select value={stationId} onChange={(e) => setStationId(e.target.value)} required className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text text-base">
-              <option value="">Selecione...</option>
-              {stations.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            <label className="block text-sm font-medium text-text">Sub-Categoria</label>
+            <select 
+              value={subCategoryId} 
+              onChange={(e) => setSubCategoryId(e.target.value)} 
+              disabled={!categoryId || subCategories.length === 0}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">{subCategories.length > 0 ? 'Selecione...' : 'Nenhuma sub-categoria'}</option>
+              {subCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
+        </div>
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium text-text">Praca</label>
+          <select 
+            value={stationId} 
+            onChange={(e) => setStationId(e.target.value)} 
+            required 
+            className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text text-base"
+          >
+            <option value="">Selecione...</option>
+            {stations.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
         </div>
         <RichTextEditor
           label="Descricao curta"
