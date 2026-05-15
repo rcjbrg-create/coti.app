@@ -20,6 +20,7 @@ export async function createCategoria(
         slug: slugify(parsed.name),
         description: parsed.description ?? null,
         display_order: parsed.display_order,
+        cover_image_path: parsed.cover_image_path ?? null,
       })
       .select("id")
       .single();
@@ -52,6 +53,7 @@ export async function updateCategoria(
         slug: slugify(parsed.name),
         description: parsed.description ?? null,
         display_order: parsed.display_order,
+        cover_image_path: parsed.cover_image_path ?? null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);

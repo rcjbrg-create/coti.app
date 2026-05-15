@@ -10,6 +10,7 @@ export const categoriaSchema = z.object({
       return trimmed || null;
     }),
   display_order: z.coerce.number().int().min(0).default(0),
+  cover_image_path: z.string().optional().nullable(),
 });
 
 export type CategoriaInput = z.infer<typeof categoriaSchema>;
