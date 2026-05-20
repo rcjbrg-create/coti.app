@@ -2,19 +2,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { UtensilsCrossed } from "lucide-react";
+import { getStorageUrl } from "@/lib/utils";
 
 interface Props {
   dish: any;
 }
 
 export function DishCard({ dish }: Props) {
+  const imagePath = dish.hero_image_path || dish.thumbnail_path;
+  
   return (
     <Link href={`/pratos/${dish.slug}`}>
       <Card hoverable>
         <div className="relative aspect-[4/3] overflow-hidden bg-beige-dark flex items-center justify-center">
-          {dish.thumbnail_path ? (
+          {imagePath ? (
             <Image
-              src={dish.thumbnail_path}
+              src={imagePath.startsWith("http") ? imagePath : getStorageUrl("dish-images", imagePath)}
               alt={dish.name}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
