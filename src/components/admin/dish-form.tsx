@@ -194,6 +194,28 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         </div>
       </section>
 
+      {/* Secao de Ingredientes */}
+      <section className="space-y-4">
+        <h3 className="text-lg font-bold text-primary">Ingredientes</h3>
+        <IngredientFieldArray dishId={dish?.id || ""} initialIngredients={existingIngredients} />
+      </section>
+
+      {/* Secao de Passos de Preparacao */}
+      {dish?.id && (
+        <section className="space-y-4">
+          <h3 className="text-lg font-bold text-primary">Passo a Passo de Preparacao</h3>
+          <PreparationStepsEditor dishId={dish.id} initialSteps={existingSteps} />
+        </section>
+      )}
+
+      {/* Secao de Midias */}
+      {dish?.id && (
+        <section className="space-y-4">
+          <h3 className="text-lg font-bold text-primary">Fotos e Videos</h3>
+          <MediaUpload dishId={dish.id} />
+        </section>
+      )}
+
       <div className="flex gap-3 pt-4">
         <Button type="submit" disabled={loading}>
           {loading ? "Salvando..." : dish ? "Atualizar Prato" : "Criar Prato"}
