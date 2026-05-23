@@ -47,6 +47,10 @@ export default function HomePage() {
         </Link>
       </div>
 
+      <div className="mt-4 text-center">
+        <p className="text-xs text-green-500 font-mono">VERSÃO 2.0 - COZINHA E SALÃO</p>
+      </div>
+
       {/* Acesso Admin */}
       <Link href="/admin">
         <div className="mt-6 flex items-center gap-2 text-text-muted hover:text-primary transition-colors cursor-pointer"

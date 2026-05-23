@@ -2,11 +2,13 @@ import { ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
 
+export const dynamic = "force-dynamic";
+
 export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <AppShell
-      title="Operação Padronizada"
-      subtitle="Acesse categorias, praças e fichas técnicas com poucos toques."
+      title="COTI Restaurante"
+      subtitle="Escolha o setor para começar."
       badge="PWA"
     >
       {children}
