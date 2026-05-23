@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ChefHat, Wine, Settings } from "lucide-react";
 import Image from "next/image";
 
+export const revalidate = 0;
+
 export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center py-8">
