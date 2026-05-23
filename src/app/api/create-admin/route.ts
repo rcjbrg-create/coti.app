@@ -5,11 +5,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  // Try env var first, fallback to hardcoded for initial setup
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhY2RieWR0a3FhYm14a2RjdWdwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODY3ODU2NiwiZXhwIjoyMDk0MjU0NTY2fQ.G6rPY396CESUfO95SYShRmjPNkJGxu5DRmGblMUtvSI";
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl) {
-    return NextResponse.json({ error: "SUPABASE_URL not configured" }, { status: 500 });
+  if (!supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: "SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured" }, { status: 500 });
   }
 
   try {
