@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Camera, Check, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/browser";
 
 interface ChecklistItem {
   id: string;

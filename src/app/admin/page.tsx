@@ -30,13 +30,15 @@ export default async function AdminDashboardPage() {
   const salaoChecklists = checklists?.filter(c => c.sector === 'salao').length || 0;
   
   // Ranking de funcionários
-  const userPerformance = {};
+  const userPerformance: Record<string, { total: number; completed: number }> = {};
   responses?.forEach(r => {
-    if (!userPerformance[r.user_name]) {
-      userPerformance[r.user_name] = { total: 0, completed: 0 };
+    if (r.user_name) {
+      if (!userPerformance[r.user_name]) {
+        userPerformance[r.user_name] = { total: 0, completed: 0 };
+      }
+      userPerformance[r.user_name].total++;
+      if (r.status === 'concluido') userPerformance[r.user_name].completed++;
     }
-    userPerformance[r.user_name].total++;
-    if (r.status === 'concluido') userPerformance[r.user_name].completed++;
   });
   
   const ranking = Object.entries(userPerformance)

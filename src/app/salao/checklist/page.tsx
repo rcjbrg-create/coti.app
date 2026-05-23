@@ -19,7 +19,7 @@ export default async function SalaoChecklistPage() {
     quinzenal: checklists?.filter(c => c.frequency === 'quinzenal') || []
   };
 
-  const frequencyLabels = {
+  const frequencyLabels: Record<string, string> = {
     diario: '📅 Diário',
     semanal: '📆 Semanal',
     quinzenal: '📅 Quinzenal'
