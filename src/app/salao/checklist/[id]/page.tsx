@@ -23,6 +23,7 @@ export default function SalaoChecklistDetailPage({ params }: { params: { id: str
 
   useEffect(() => {
     loadChecklist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   async function loadChecklist() {
