@@ -22,7 +22,7 @@ export default async function AdminDashboard() {
     supabase.from("dishes").select("*", { count: "exact", head: true }).eq("is_published", false),
     supabase.from("categories").select("*", { count: "exact", head: true }),
     supabase.from("stations").select("*", { count: "exact", head: true }),
-    supabase.from("mise_en_place_checklists").select("*", { count: "exact", head: true }),
+    supabase.from("checklists").select("*", { count: "exact", head: true }),
     supabase
       .from("dishes")
       .select("id, name, is_published, updated_at, category:categories(name)")
