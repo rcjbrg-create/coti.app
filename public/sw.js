@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 // COTI PWA Service Worker — cache-first for images, network-first for pages
 
-const CACHE_VERSION = "coti-v1";
+const CACHE_VERSION = "coti-v2";
 const STATIC_CACHE = `coti-static-${CACHE_VERSION}`;
 const IMAGE_CACHE = `coti-images-${CACHE_VERSION}`;
 const PAGES_CACHE = `coti-pages-${CACHE_VERSION}`;

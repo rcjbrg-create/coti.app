@@ -6,7 +6,7 @@
  * that can be imported by client components.
  */
 
-export const SW_CACHE_VERSION = "coti-v1";
+export const SW_CACHE_VERSION = "coti-v2";
 
 export const CACHE_NAMES = {
   STATIC: `coti-static-${SW_CACHE_VERSION}`,
@@ -33,10 +33,24 @@ export function registerServiceWorker(): void {
   if (typeof window === "undefined") return;
   if (!("serviceWorker" in navigator)) return;
 
+  // Forçar limpeza de caches antigos
+  if ("caches" in window) {
+    caches.keys().then((names) => {
+      names.forEach((name) => {
+        if (name.includes("coti-") && !name.includes(SW_CACHE_VERSION)) {
+          caches.delete(name);
+        }
+      });
+    });
+  }
+
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js", { scope: "/" })
       .then((registration) => {
+        // Forçar update imediato
+        registration.update().catch(() => {});
+        
         // Check for SW updates every hour
         setInterval(() => {
           registration.update().catch(() => {});
