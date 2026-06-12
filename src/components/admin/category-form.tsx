@@ -49,7 +49,7 @@ export function CategoryForm({ category }: Props) {
         return;
       }
 
-      router.push("/admin/categorias");
+      router.push("/admin/protected/categorias");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Erro ao salvar categoria");

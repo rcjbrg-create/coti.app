@@ -373,6 +373,151 @@ export interface Database {
           created_at?: string;
         };
       };
+
+      // -- checklists
+      checklists: {
+        Row: {
+          id: string;
+          name: string;
+          sector: string;
+          frequency: string;
+          assigned_groups: string[] | null;
+          display_order: number;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          sector: string;
+          frequency: string;
+          assigned_groups?: string[] | null;
+          display_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          sector?: string;
+          frequency?: string;
+          assigned_groups?: string[] | null;
+          display_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+        };
+      };
+
+      // -- checklist_items
+      checklist_items: {
+        Row: {
+          id: string;
+          checklist_id: string;
+          description: string;
+          display_order: number;
+          requires_photo: boolean;
+          requires_video: boolean;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          checklist_id: string;
+          description: string;
+          display_order?: number;
+          requires_photo?: boolean;
+          requires_video?: boolean;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          checklist_id?: string;
+          description?: string;
+          display_order?: number;
+          requires_photo?: boolean;
+          requires_video?: boolean;
+          is_active?: boolean;
+          created_at?: string;
+        };
+      };
+
+      // -- checklist_responses
+      checklist_responses: {
+        Row: {
+          id: string;
+          checklist_id: string;
+          item_id: string;
+          user_id: string | null;
+          user_name: string | null;
+          status: string;
+          notes: string | null;
+          photo_url: string | null;
+          video_url: string | null;
+          completed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          checklist_id: string;
+          item_id: string;
+          user_id?: string | null;
+          user_name?: string | null;
+          status?: string;
+          notes?: string | null;
+          photo_url?: string | null;
+          video_url?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          checklist_id?: string;
+          item_id?: string;
+          user_id?: string | null;
+          user_name?: string | null;
+          status?: string;
+          notes?: string | null;
+          photo_url?: string | null;
+          video_url?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+        };
+      };
+
+      // -- users
+      users: {
+        Row: {
+          id: string;
+          name: string;
+          email: string | null;
+          phone: string | null;
+          sector: string | null;
+          role: string;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email?: string | null;
+          phone?: string | null;
+          sector?: string | null;
+          role?: string;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string | null;
+          phone?: string | null;
+          sector?: string | null;
+          role?: string;
+          active?: boolean;
+          created_at?: string;
+        };
+      };
     };
 
     // ── Views ──────────────────────────────────────────────────────────────────
@@ -462,6 +607,10 @@ export type Dish             = Tables<"dishes">;
 export type DishIngredient   = Tables<"dish_ingredients">;
 export type DishStep         = Tables<"dish_steps">;
 export type DishMedia        = Tables<"dish_media">;
+export type Checklist        = Tables<"checklists">;
+export type ChecklistItem    = Tables<"checklist_items">;
+export type ChecklistResponse = Tables<"checklist_responses">;
+export type User             = Tables<"users">;
 export type MiseEnPlaceChecklist = Tables<"mise_en_place_checklists">;
 export type MiseEnPlaceItem  = Tables<"mise_en_place_items">;
 

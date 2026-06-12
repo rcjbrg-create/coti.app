@@ -10,26 +10,33 @@ export default async function AdminChecklistsPage() {
   await requireAdmin();
   const supabase = await createClient();
   const { data: checklists } = await supabase
-    .from("mise_en_place_checklists")
-    .select("*, station:stations(name)")
-    .order("shift");
+    .from("checklists")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order");
+
+  const frequencyLabels: Record<string, string> = {
+    diario: "Diario",
+    semanal: "Semanal",
+    mensal: "Mensal",
+  };
 
   return (
     <div>
       <SectionHeader
         title="Checklists"
         action={
-          <Link href="/admin/checklists/novo">
+          <Link href="/admin/protected/checklists/novo">
             <Button size="sm"><Plus size={16} className="mr-1" /> Novo</Button>
           </Link>
         }
       />
       <div className="px-4 space-y-2">
         {(checklists || []).map((cl) => (
-          <Link key={cl.id} href={`/admin/checklists/${cl.id}`} className="flex items-center justify-between p-4 bg-surface rounded-xl border border-border hover:shadow-sm">
+          <Link key={cl.id} href={`/admin/protected/checklists/${cl.id}`} className="flex items-center justify-between p-4 bg-surface rounded-xl border border-border hover:shadow-sm">
             <div>
-              <p className="font-medium text-text">{cl.title}</p>
-              <p className="text-sm text-text-muted">{(cl.station as any)?.name} | {cl.shift}</p>
+              <p className="font-medium text-text">{cl.name}</p>
+              <p className="text-sm text-text-muted">{cl.sector} | {frequencyLabels[cl.frequency] || cl.frequency}</p>
             </div>
             <Pencil size={16} className="text-text-muted" />
           </Link>

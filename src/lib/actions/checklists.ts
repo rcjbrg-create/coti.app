@@ -16,12 +16,12 @@ export async function createChecklist(
     const supabase = createClient();
 
     const { data, error } = await supabase
-      .from("mise_en_place_checklists")
+      .from("checklists")
       .insert({
-        title: parsed.title,
-        description: parsed.description ?? null,
-        station_id: parsed.station_id,
-        shift: parsed.shift,
+        name: parsed.name,
+        sector: parsed.sector,
+        frequency: parsed.frequency,
+        assigned_groups: parsed.assigned_groups,
       })
       .select("id")
       .single();
@@ -32,29 +32,27 @@ export async function createChecklist(
 
     if (parsed.items.length > 0) {
       const itemInserts = parsed.items
-        .filter((i) => i.item_label)
+        .filter((i) => i.description)
         .map((i, idx) => ({
           checklist_id: checklistId,
-          item_label: i.item_label,
-          item_description: i.item_description ?? null,
-          is_required: i.is_required,
+          description: i.description,
           display_order: idx,
         }));
 
       if (itemInserts.length > 0) {
         const { error: itemError } = await supabase
-          .from("mise_en_place_items")
+          .from("checklist_items")
           .insert(itemInserts);
         if (itemError) return { success: false, error: itemError.message };
       }
     }
 
-    revalidatePath("/admin/checklists");
+    revalidatePath("/admin/protected/checklists");
     revalidatePath("/checklist");
     return { success: true, id: checklistId };
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return { success: false, error: err.issues[0]?.message ?? "Dados inválidos" };
+      return { success: false, error: err.issues[0]?.message ?? "Dados invalidos" };
     }
     return { success: false, error: "Erro inesperado ao criar checklist" };
   }
@@ -71,44 +69,41 @@ export async function updateChecklist(
     const supabase = createClient();
 
     const { error } = await supabase
-      .from("mise_en_place_checklists")
+      .from("checklists")
       .update({
-        title: parsed.title,
-        description: parsed.description ?? null,
-        station_id: parsed.station_id,
-        shift: parsed.shift,
-        updated_at: new Date().toISOString(),
+        name: parsed.name,
+        sector: parsed.sector,
+        frequency: parsed.frequency,
+        assigned_groups: parsed.assigned_groups,
       })
       .eq("id", id);
 
     if (error) return { success: false, error: error.message };
 
     // Replace items
-    await supabase.from("mise_en_place_items").delete().eq("checklist_id", id);
+    await supabase.from("checklist_items").delete().eq("checklist_id", id);
 
     const itemInserts = parsed.items
-      .filter((i) => i.item_label)
+      .filter((i) => i.description)
       .map((i, idx) => ({
         checklist_id: id,
-        item_label: i.item_label,
-        item_description: i.item_description ?? null,
-        is_required: i.is_required,
+        description: i.description,
         display_order: idx,
       }));
 
     if (itemInserts.length > 0) {
       const { error: itemError } = await supabase
-        .from("mise_en_place_items")
+        .from("checklist_items")
         .insert(itemInserts);
       if (itemError) return { success: false, error: itemError.message };
     }
 
-    revalidatePath("/admin/checklists");
+    revalidatePath("/admin/protected/checklists");
     revalidatePath("/checklist");
     return { success: true };
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return { success: false, error: err.issues[0]?.message ?? "Dados inválidos" };
+      return { success: false, error: err.issues[0]?.message ?? "Dados invalidos" };
     }
     return { success: false, error: "Erro inesperado ao atualizar checklist" };
   }
@@ -121,14 +116,13 @@ export async function deleteChecklist(
 
   const supabase = createClient();
   const { error } = await supabase
-    .from("mise_en_place_checklists")
+    .from("checklists")
     .delete()
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath("/admin/checklists");
+  revalidatePath("/admin/protected/checklists");
   revalidatePath("/checklist");
   return { success: true };
 }
-

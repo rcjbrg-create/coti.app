@@ -20,7 +20,7 @@ export default async function AdminPracasPage() {
         title="Pracas"
         subtitle="Use as setas para reordenar a exibicao"
         action={
-          <Link href="/admin/pracas/novo">
+          <Link href="/admin/protected/pracas/novo">
             <Button size="sm"><Plus size={16} className="mr-1" /> Nova</Button>
           </Link>
         }

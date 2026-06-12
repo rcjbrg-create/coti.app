@@ -1,7 +1,6 @@
 import { SectionHeader } from "@/components/layout/section-header";
 import { ChecklistCard } from "@/components/checklist/checklist-card";
-import { getStationBySlug } from "@/lib/queries/pracas";
-import { getChecklistsByStation } from "@/lib/queries/checklists";
+import { getChecklistsBySector } from "@/lib/queries/checklists";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -11,16 +10,17 @@ interface Props {
 export default async function StationChecklistPage({ params }: Props) {
   const { pracaSlug } = await params;
 
-  const station = await getStationBySlug(pracaSlug);
-  if (!station) notFound();
+  // Map slug to sector: cozinha or salao
+  const sector = pracaSlug === "cozinha" ? "cozinha" : pracaSlug === "salao" ? "salao" : null;
+  if (!sector) notFound();
 
-  const checklists = await getChecklistsByStation(station.id);
+  const checklists = await getChecklistsBySector(sector);
 
   return (
     <>
       <SectionHeader
-        title={`Checklist — ${station.name}`}
-        subtitle="Mise en place por turno"
+        title={`Checklist — ${sector === "cozinha" ? "Cozinha" : "Salao"}`}
+        subtitle="Mise en place"
       />
       <div className="px-4 space-y-4">
         {checklists.length > 0 ? (
@@ -29,7 +29,7 @@ export default async function StationChecklistPage({ params }: Props) {
           ))
         ) : (
           <p className="text-center text-text-muted py-8">
-            Nenhum checklist cadastrado para esta praca.
+            Nenhum checklist cadastrado para este setor.
           </p>
         )}
       </div>

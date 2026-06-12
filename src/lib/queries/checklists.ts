@@ -1,27 +1,42 @@
 import { createClient } from "@/lib/supabase/server";
-import type { MiseEnPlaceChecklist, MiseEnPlaceItem } from "@/types/database";
 
-export interface ChecklistWithItems extends MiseEnPlaceChecklist {
-  items: MiseEnPlaceItem[];
+export interface ChecklistWithItems {
+  id: string;
+  name: string;
+  sector: string;
+  frequency: string;
+  assigned_groups: string[] | null;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+  items: {
+    id: string;
+    checklist_id: string;
+    description: string;
+    display_order: number;
+    requires_photo: boolean;
+    requires_video: boolean;
+    is_active: boolean;
+    created_at: string;
+  }[];
 }
 
 /**
- * Returns all active checklists for a given station id, with their items.
- * Ordered by shift (abertura → producao → fechamento).
+ * Returns all active checklists for a given sector, with their items.
  */
-export async function getChecklistsByStation(
-  stationId: string,
+export async function getChecklistsBySector(
+  sector: string,
 ): Promise<ChecklistWithItems[]> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("mise_en_place_checklists")
-    .select("*, items:mise_en_place_items(*)")
-    .eq("station_id", stationId)
+    .from("checklists")
+    .select("*, items:checklist_items(*)")
+    .eq("sector", sector)
     .eq("is_active", true)
-    .order("shift");
+    .order("display_order");
 
   if (error) {
-    console.error("[getChecklistsByStation]", error.message);
+    console.error("[getChecklistsBySector]", error.message);
     return [];
   }
 
@@ -29,16 +44,15 @@ export async function getChecklistsByStation(
 }
 
 /**
- * Returns all active checklists grouped by station.
- * Useful for the checklist index page.
+ * Returns all active checklists grouped by sector.
  */
 export async function getAllActiveChecklists(): Promise<ChecklistWithItems[]> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("mise_en_place_checklists")
-    .select("*, items:mise_en_place_items(*)")
+    .from("checklists")
+    .select("*, items:checklist_items(*)")
     .eq("is_active", true)
-    .order("shift");
+    .order("display_order");
 
   if (error) {
     console.error("[getAllActiveChecklists]", error.message);

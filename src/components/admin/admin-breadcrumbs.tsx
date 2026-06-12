@@ -6,6 +6,7 @@ import { ChevronRight, Home } from "lucide-react";
 
 const SEGMENT_LABELS: Record<string, string> = {
   admin: "Dashboard",
+  protected: "Dashboard",
   pratos: "Pratos",
   categorias: "Categorias",
   pracas: "Pracas",
@@ -40,7 +41,7 @@ export function AdminBreadcrumbs() {
       aria-label="Breadcrumbs"
       className="flex items-center gap-1 px-4 py-2 text-xs text-text-muted bg-beige border-b border-border overflow-x-auto whitespace-nowrap"
     >
-      <Link href="/admin" className="flex items-center gap-1 hover:text-primary transition-colors shrink-0">
+      <Link href="/admin/protected" className="flex items-center gap-1 hover:text-primary transition-colors shrink-0">
         <Home size={12} />
         <span>Dashboard</span>
       </Link>

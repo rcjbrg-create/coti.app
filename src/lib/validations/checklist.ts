@@ -1,24 +1,14 @@
 import { z } from "zod";
 
 export const checklistItemSchema = z.object({
-  item_label: z.string().min(1, "Item é obrigatório"),
-  item_description: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((v) => v?.trim() || null),
-  is_required: z.boolean().default(true),
+  description: z.string().min(1, "Item e obrigatorio"),
 });
 
 export const checklistSchema = z.object({
-  title: z.string().min(1, "Título é obrigatório"),
-  description: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((v) => v?.trim() || null),
-  station_id: z.string().uuid("Selecione uma praça válida"),
-  shift: z.enum(["abertura", "producao", "fechamento"]),
+  name: z.string().min(1, "Nome e obrigatorio"),
+  sector: z.enum(["cozinha", "salao"]),
+  frequency: z.enum(["diario", "semanal", "mensal"]),
+  assigned_groups: z.array(z.string()).default([]),
   items: z.array(checklistItemSchema).default([]),
 });
 

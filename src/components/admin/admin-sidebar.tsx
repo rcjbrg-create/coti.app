@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 import { LayoutDashboard, UtensilsCrossed, FolderOpen, ChefHat, ClipboardList } from "lucide-react";
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/pratos", label: "Pratos", icon: UtensilsCrossed },
-  { href: "/admin/categorias", label: "Categorias", icon: FolderOpen },
-  { href: "/admin/pracas", label: "Pracas", icon: ChefHat },
-  { href: "/admin/checklists", label: "Checklists", icon: ClipboardList },
+  { href: "/admin/protected", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/protected/pratos", label: "Pratos", icon: UtensilsCrossed },
+  { href: "/admin/protected/categorias", label: "Categorias", icon: FolderOpen },
+  { href: "/admin/protected/pracas", label: "Pracas", icon: ChefHat },
+  { href: "/admin/protected/checklists", label: "Checklists", icon: ClipboardList },
 ];
 
 interface Props {

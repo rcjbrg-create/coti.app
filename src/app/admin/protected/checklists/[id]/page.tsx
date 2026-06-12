@@ -13,20 +13,15 @@ export default async function EditChecklistPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: checklist }, { data: stations }, { data: items }] =
+  const [{ data: checklist }, { data: items }] =
     await Promise.all([
       supabase
-        .from("mise_en_place_checklists")
+        .from("checklists")
         .select("*")
         .eq("id", id)
         .single(),
       supabase
-        .from("stations")
-        .select("id, name")
-        .eq("is_active", true)
-        .order("display_order"),
-      supabase
-        .from("mise_en_place_items")
+        .from("checklist_items")
         .select("*")
         .eq("checklist_id", id)
         .order("display_order"),
@@ -40,7 +35,6 @@ export default async function EditChecklistPage({ params }: Props) {
       <div className="px-4">
         <ChecklistForm
           checklist={checklist}
-          stations={stations || []}
           existingItems={items || []}
         />
       </div>

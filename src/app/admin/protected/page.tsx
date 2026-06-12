@@ -59,7 +59,7 @@ export default async function AdminDashboard() {
         <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide mb-2">Modulos</h2>
         <div className="grid grid-cols-3 gap-3">
           <Link
-            href="/admin/categorias"
+            href="/admin/protected/categorias"
             className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
             <div className="p-2 rounded-xl bg-primary/10">
@@ -69,7 +69,7 @@ export default async function AdminDashboard() {
             <span className="text-xs text-text-muted">Categorias</span>
           </Link>
           <Link
-            href="/admin/pracas"
+            href="/admin/protected/pracas"
             className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
             <div className="p-2 rounded-xl bg-primary/10">
@@ -79,7 +79,7 @@ export default async function AdminDashboard() {
             <span className="text-xs text-text-muted">Pracas</span>
           </Link>
           <Link
-            href="/admin/checklists"
+            href="/admin/protected/checklists"
             className="flex flex-col items-center gap-1.5 p-4 bg-surface rounded-2xl border border-border hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
             <div className="p-2 rounded-xl bg-primary/10">
@@ -94,13 +94,13 @@ export default async function AdminDashboard() {
       <div className="px-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide">Ultimos editados</h2>
-          <Link href="/admin/pratos" className="text-xs text-primary hover:underline">Ver todos</Link>
+          <Link href="/admin/protected/pratos" className="text-xs text-primary hover:underline">Ver todos</Link>
         </div>
         <div className="space-y-2">
           {(recentDishes || []).map((dish) => (
             <Link
               key={dish.id}
-              href={`/admin/pratos/${dish.id}`}
+              href={`/admin/protected/pratos/${dish.id}`}
               className="flex items-center gap-3 p-3 bg-surface rounded-xl border border-border hover:shadow-md hover:border-primary/30 transition-all"
             >
               <UtensilsCrossed size={16} className="text-text-muted shrink-0" />

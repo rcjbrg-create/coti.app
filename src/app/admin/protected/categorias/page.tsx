@@ -20,7 +20,7 @@ export default async function AdminCategoriasPage() {
         title="Categorias"
         subtitle="Use as setas para reordenar a exibicao"
         action={
-          <Link href="/admin/categorias/novo">
+          <Link href="/admin/protected/categorias/novo">
             <Button size="sm"><Plus size={16} className="mr-1" /> Nova</Button>
           </Link>
         }

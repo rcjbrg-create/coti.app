@@ -32,7 +32,7 @@ export function AdminShell({ children }: Props) {
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden touch-target">
               {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <Link href="/admin" className="text-lg font-bold">COTI Admin</Link>
+            <Link href="/admin/protected" className="text-lg font-bold">COTI Admin</Link>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/" className="text-sm text-white/70 hover:text-white">Ver site</Link>

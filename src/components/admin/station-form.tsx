@@ -33,7 +33,7 @@ export function StationForm({ station }: Props) {
       await supabase.from("stations").insert(data);
     }
 
-    router.push("/admin/pracas");
+    router.push("/admin/protected/pracas");
     router.refresh();
   };
 

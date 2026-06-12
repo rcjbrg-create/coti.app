@@ -91,7 +91,7 @@ export function DishForm({ dish, categories, stations, existingIngredients = [],
         if (dbError) throw dbError;
       }
 
-      router.push("/admin/pratos");
+      router.push("/admin/protected/pratos");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Erro ao salvar");
